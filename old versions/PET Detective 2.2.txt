@@ -1,0 +1,123 @@
+// PET Detective Tool 2.2 updated 8/17/22 (added Oops)
+// Classic mode will zoom on an ROI and prompt if there is a cell
+// Max mode will identify the maximum intensity of each ROI 
+// the results are exported as a csv
+// Install permanently by saving this text file in the ImageJ\macros\toolsets folder
+// Created by Ben 1
+var max_count = 0; 
+macro "PET Detective Tool - C211Da4C954DcaC655D4fC966D74D85DbaC644D75D8eCe65DccDdaDe5Df7C855D49Ca77D58C433Db3Cd54De8C665D80Ca77DbbC843Dc0Ce66D0aD0bD0cD0dD1aD1bD1cD1dD1eD1fD2cD2dD2eD3dD3eC866D59D69D79C979D3fC311Db5Cb54Dd5C855D11D24D25D26D55D6dD86Dc1C977Da8C744D38Ce65D2aD3aD3bD3cC865DacDadDb8Cb88DbeC633Dc7Ce65De6Df5Df6C766Dc2Cc77D19C855D17D21D27D37D46C866D8dCb99Da9C311Da5Dc8C966DafC755D35C977D47D95DabDbfC744D20Ce65D4bD4cD4dC865D65D72D89Cb77D73C554D81Ce54DdbDdcDe9DeaDebDecDf8Df9DfaDfbDfcC756D43D6bCa77D53D54D63D64D84D99C754DaeC866D9bCb98D97DaaC433D41Cc55De1De2Ca77D78D88C755D34D7fCf65D2bC866D52D7bD7dDb9Cb87Db7C654Dd7Cd65Df0Df1Df2C766Da0Ce66D0eC855D06C876D9aD9cCcaaDcdC311Dc9C955D39C755D01D93D94Ca66D13C644D10D33D7aC955D05D15D16Ca78D57C544D42Ce54DedDfdDfeC765D7eD8aD8bDa7Ca77D08C944Dd2Cb88D96C322Da2Cd55De7C977D77C754D45D9dDd8Cb88D83C644D31D32C766D44D56Cd66D5dDe3C866D66D8cCc99DbdC221D61Ca66D03C755D07D18D76C744D9eCa78D68C545D00C854Db6C866D6cD7cCe98DeeC533Dc6Cc66D5cCa77D82C755D62Da6Cd88D2fC655D60D70Cd66Df3C778DcfCe77Df4C855D9fC867D6fCcacDefC211D51Ca54Dd9C655D90Dc3C855D22D23C433D40C943Dd0Dd1C322D50Cc55Dd4De0C644D30Cc77D4eC966D02D14C854Dd6C866D6eCb66D29C655D92C777Db1Ce76D09D0fDe4Cda9DbcC211Da3C955D04C966D12D48C978D5fC544D91Dc4Cb88D98C433D71Dc5Cd65DcbC977DceCb88D67Cd99DddC322Db4Ca66Db0C744D6aCa88D87C555Db2C755D28D5aC633D8fCd66D4aCe88DffC778DdfC877D5eCdddDdeC555Da1C855D36Cb66Dd3Ca55D5b"
+{
+run("Clear Results");
+types = newArray("Classic", "Max");
+flag = 1;
+Dialog.createNonBlocking("PET Detective 2.2");
+	Dialog.addChoice("Mode:", types);
+//	Dialog.addNumber("Median Filter:", 0);
+//	Dialog.addNumber("Gaussian Filter:", 0);
+	Dialog.show();
+	type = Dialog.getChoice();
+	m_radius = 0;
+	g_radius = 0; //these are probably not needed
+//	m_radius = Dialog.getNumber();
+//	g_radius = Dialog.getNumber(); 
+	
+// Classic zooms on each ROI and prompts a count
+if(type == "Classic") { 
+run("Clear Results");
+Classic();
+
+function Classic(){
+	b = 999;
+	for (i = 0; i<roiManager("count"); i++) {
+			roiManager("select", i);
+			run("To Selection");
+			Dialog.createNonBlocking("PET Detective");		
+			Dialog.addNumber(i+1+" / "+roiManager("count") , 0);
+			Dialog.addMessage("b to go back")
+			Dialog.show();
+			cell = Dialog.getNumber();
+			while(cell == b) {i-=1;
+					roiManager("select", i);
+					run("To Selection");
+					Dialog.createNonBlocking("PET Detective");		
+					Dialog.addNumber(i+1+" / "+roiManager("count") , cell);
+					Dialog.addMessage("b to go back");
+					Dialog.show();
+					cell = Dialog.getNumber();}
+			setResult("Chamber "+(i+1), "Cell?", cell);}
+	updateResults; }
+}
+//Max detects and reports the maximum value of each chamber
+if(type == "Max") {
+	run("Clear Results");
+	run("Select None");
+	MaxDet(m_radius, g_radius);
+	}
+//Prompt if any cells were missed, then run Oops if needed
+choices = newArray("Save and Quit", "Yes");
+Dialog.createNonBlocking("PET Detective 2.2");		
+Dialog.addMessage("Miss any?");
+Dialog.addChoice("Options:", choices);
+choice = Dialog.getChoice();
+Dialog.show();
+	if (choice == "Yes") {
+		oop = 1;
+		Oops();}
+	else {saveAs("Results");}
+function MaxDet(m_radius, g_radius) { // max value may need to be optimized by exposure time, current is 800ms
+	if (m_radius != 0) {
+		run("Median...", "radius=m_radius");} //meant to reduce noise, but reducing noise also reduces max value
+	if (g_radius != 0) { 
+		run("Gaussian Blur...", "sigma=g_radius");}
+	for (i = 0; i<roiManager("count"); i++) {
+			roiManager("select", i);
+			max=getValue("Max");
+			setResult("Chamber #", i, i+1);
+			setResult("Max Intensity", i, max);
+			if (max > 5000) { //the camera maxes out at 2^16 where 0 = black and 65535 = white ... checking top 10% (65535 * .9 = 58981)
+				max_count += 1;
+				setResult("Cell", i, 1);
+				roiManager("select", i);
+				run("Properties... ", "position=none group=none stroke=red width=0 fill=none");} //patriotism
+			else {setResult("Cell", i, 0);}
+		}
+	Dialog.createNonBlocking("Max Count");	
+	Dialog.addMessage(max_count);	
+	Dialog.addMessage("chambers containing cells");
+	Dialog.show();
+		updateResults;}	
+function Oops () { //If there are cells that are missed, then you can manually add them to the list
+	items = newArray("Add", "Quit");
+	while (oop == 1) {
+		Dialog.createNonBlocking("PET Detective 2.2");		
+		Dialog.addMessage("Click on any ROI that contains a cell and click OK to add this chamber");
+		Dialog.addChoice("Add or quit?", items);
+		Dialog.show();
+		item = Dialog.getChoice();
+		if (item == "Add") {
+			i = roiManager("index");
+			if (i == -1) {Error();}
+			else{
+				run("Properties... ", "position=none group=none stroke=red width=0 fill=none");
+				setResult("Cell", i, 1);
+				run("Select None");
+				missed += 1;
+				max_count += 1;
+				} 
+						}
+		if (item == "Quit") {oop = 0;
+			Dialog.createNonBlocking("Updated Count");	
+			Dialog.addMessage("New Total:");
+			Dialog.addMessage(max_count);	
+			Dialog.addMessage("Cells added:");
+			Dialog.addMessage(missed);	
+			Dialog.show();
+			updateResults;
+			saveAs("Results");}
+	}
+	}
+function Error () {
+					Dialog.createNonBlocking("Error");		
+					Dialog.addMessage("bruh");
+					Dialog.show();}
+}
