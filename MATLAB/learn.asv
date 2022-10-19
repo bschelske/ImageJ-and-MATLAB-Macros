@@ -1,0 +1,9 @@
+opts = detectImportOptions("example.csv");
+preview("example.csv", opts)
+ds = readmatrix("example.csv");
+ds
+ds(1,1)
+ds(1,:)
+ds(:,1)
+ds(:,1) + ds(:,1)
+plot(cdate,pop,'ro')

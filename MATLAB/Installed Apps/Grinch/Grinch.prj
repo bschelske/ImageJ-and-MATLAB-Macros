@@ -1,0 +1,64 @@
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration build-checksum="2990131644" file="C:\Users\bensc\Desktop\Research\MATLAB\Grinch\Grinch.prj" location="C:\Users\bensc\Desktop\Research\MATLAB\Grinch" name="Grinch" target="target.mlapps" target-name="Package App">
+    <param.appname>Grinch</param.appname>
+    <param.authnamewatermark>Ben</param.authnamewatermark>
+    <param.email>bschelsk@iastate.edu</param.email>
+    <param.company />
+    <param.icon>${PROJECT_ROOT}\Grinch_resources\icon_24.png</param.icon>
+    <param.icons>
+      <file>${PROJECT_ROOT}\Grinch_resources\icon_48.png</file>
+      <file>${PROJECT_ROOT}\Grinch_resources\icon_24.png</file>
+      <file>${PROJECT_ROOT}\Grinch_resources\icon_16.png</file>
+    </param.icons>
+    <param.summary>Get Results Including Histograms</param.summary>
+    <param.description>7/20/22 Updated to work with PET Detective 2.1</param.description>
+    <param.screenshot>C:\Users\bensc\AppData\Local\Temp\tp225da308_ec2c_43cf_b317_4533a7a119b1.png</param.screenshot>
+    <param.version>1.1</param.version>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms />
+    <param.output>C:\Users\bensc\Desktop\Research\MATLAB\Grinch 1.1</param.output>
+    <param.guid>693d9877-2ac7-4d85-9dfc-9f42c785b48f</param.guid>
+    <unset>
+      <param.authnamewatermark />
+      <param.email />
+      <param.company />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.platforms />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}\app1.mlapp</file>
+    </fileset.main>
+    <fileset.depfun>
+      <file>${PROJECT_ROOT}\grinch.png</file>
+    </fileset.depfun>
+    <fileset.resources />
+    <fileset.package />
+    <build-deliverables>
+      <file location="C:\Users\bensc\Desktop\Research\MATLAB" name="Grinch 1.1" optional="false">C:\Users\bensc\Desktop\Research\MATLAB\Grinch 1.1</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2022a</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.0</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>

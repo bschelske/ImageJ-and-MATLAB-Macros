@@ -1,0 +1,63 @@
+<deployment-project plugin="plugin.apptool" plugin-version="1.0">
+  <configuration build-checksum="3052357129" file="C:\Users\bensc\Desktop\Local Research\MATLAB\Grinch 2.0\skim_grinch\Grinch20221014.prj" location="C:\Users\bensc\Desktop\Local Research\MATLAB\Grinch 2.0\skim_grinch" name="Grinch20221014" target="target.mlapps" target-name="Package App">
+    <param.appname>Grinch20221014</param.appname>
+    <param.authnamewatermark>Ben</param.authnamewatermark>
+    <param.email>bschelsk@iastate.edu</param.email>
+    <param.company />
+    <param.icon />
+    <param.icons />
+    <param.summary>Get Results Including Histograms</param.summary>
+    <param.description>7/20/22 Updated to work with PET Detective 2.1
+10/14/22 MATLAB History: Background Subtraction</param.description>
+    <param.screenshot>C:\Users\bensc\AppData\Local\Temp\tp16be50eb_372d_4d16_b77a_a0b511c9f828.png</param.screenshot>
+    <param.version>1.1</param.version>
+    <param.products.name />
+    <param.products.id />
+    <param.products.version />
+    <param.platforms />
+    <param.output>C:\Users\bensc\Desktop\Local Research\MATLAB\Grinch 2.0\Ethan Package</param.output>
+    <param.guid>40041804-53da-4203-9722-f995c7cf26d8</param.guid>
+    <unset>
+      <param.authnamewatermark />
+      <param.email />
+      <param.company />
+      <param.icon />
+      <param.icons />
+      <param.products.name />
+      <param.products.id />
+      <param.products.version />
+      <param.platforms />
+    </unset>
+    <fileset.main>
+      <file>${PROJECT_ROOT}\skimgrinch.mlapp</file>
+    </fileset.main>
+    <fileset.depfun>
+      <file>${PROJECT_ROOT}\skimgrinchscript.m</file>
+    </fileset.depfun>
+    <fileset.resources />
+    <fileset.package />
+    <build-deliverables>
+      <file location="C:\Users\bensc\Desktop\Local Research\MATLAB\Grinch 2.0" name="Ethan Package" optional="false">C:\Users\bensc\Desktop\Local Research\MATLAB\Grinch 2.0\Ethan Package</file>
+    </build-deliverables>
+    <workflow />
+    <matlab>
+      <root>C:\Program Files\MATLAB\R2022a</root>
+      <toolboxes />
+    </matlab>
+    <platform>
+      <unix>false</unix>
+      <mac>false</mac>
+      <windows>true</windows>
+      <win2k>false</win2k>
+      <winxp>false</winxp>
+      <vista>false</vista>
+      <linux>false</linux>
+      <solaris>false</solaris>
+      <osver>10.0</osver>
+      <os32>false</os32>
+      <os64>true</os64>
+      <arch>win64</arch>
+      <matlab>true</matlab>
+    </platform>
+  </configuration>
+</deployment-project>
