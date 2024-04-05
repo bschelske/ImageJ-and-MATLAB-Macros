@@ -1,0 +1,20 @@
+max_count = 0;
+for(j = 1; j <= nSlices; j++){
+setSlice(j);
+for (i = 0; i<roiManager("count"); i++) {
+			roiManager("select", i);
+			max=getValue("Max");
+			setResult("Chamber #", i, i+1);
+			setResult("Max Intensity", i, max);
+			if (max > 65534) { //the camera maxes out at 2^16 where 0 = black and 65535 = white ... checking top 10% (65535 * .9 = 58981)
+				max_count += 1;
+				setResult("Cell", i, 1);
+				roiManager("select", i);
+				run("Properties... ", "position=none group=none stroke=red width=0 fill=none");} //patriotism
+			else {setResult("Cell", i, 0);}
+		}}
+	Dialog.createNonBlocking("Max Count");	
+	Dialog.addMessage(max_count);	
+	Dialog.addMessage("BOI");
+	Dialog.show();
+		updateResults;}	

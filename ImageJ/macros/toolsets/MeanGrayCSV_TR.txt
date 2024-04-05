@@ -1,0 +1,54 @@
+// like you mean it
+// Install permanently by saving this text file in the ImageJ\macros\toolsets folder
+// Click the >> button on the tool bar and then select IntDenCSV 
+// Created by Ben 1  
+
+// version 1.01 
+//Fixed bug where Integrated density was being used to calculate if camera was being maxed out rather than using the maximum measurement
+//Added red filling to maxed out chambers.
+
+macro "IntDenCSV Tool - C000D16D17D18D25D29D35D39D45D49D65D66D69D75D77D79D85D87D89D98Db5Db6Db7Dc8Dc9Dd7Dd8De5De6C000C111C222C333C444C555C666C777C888C999CaaaCbbbCcccCdddCeeeCfffD00D01D02D03D04D05D06D07D08D09D0aD0bD0cD0dD0eD0fD10D11D12D13D14D15D19D1aD1bD1cD1dD1eD1fD20D21D22D23D24D26D27D28D2aD2bD2cD2dD2eD2fD30D31D32D33D34D36D37D38D3aD3bD3cD3dD3eD3fD40D41D42D43D44D46D47D48D4aD4bD4cD4dD4eD4fD50D51D52D53D54D55D56D57D58D59D5aD5bD5cD5dD5eD5fD60D61D62D63D64D67D68D6aD6bD6cD6dD6eD6fD70D71D72D73D74D76D78D7aD7bD7cD7dD7eD7fD80D81D82D83D84D86D88D8aD8bD8cD8dD8eD8fD90D91D92D93D94D95D96D97D99D9aD9bD9cD9dD9eD9fDa0Da1Da2Da3Da4Da5Da6Da7Da8Da9DaaDabDacDadDaeDafDb0Db1Db2Db3Db4Db8Db9DbaDbbDbcDbdDbeDbfDc0Dc1Dc2Dc3Dc4Dc5Dc6Dc7DcaDcbDccDcdDceDcfDd0Dd1Dd2Dd3Dd4Dd5Dd6Dd9DdaDdbDdcDddDdeDdfDe0De1De2De3De4De7De8De9DeaDebDecDedDeeDefDf0Df1Df2Df3Df4Df5Df6Df7Df8Df9DfaDfbDfcDfdDfeDff"{
+flag = 0;
+run("Set Measurements...", "mean redirect=None decimal=3");
+run("Clear Results");
+for(j = 1; j <= nSlices; j++){
+setSlice(j);
+	for (i = 0; i<roiManager("count"); i++) {
+		roiManager("select", i)
+		fillcheck = Roi.getFillColor;
+		Mean= getValue("Mean");
+		Max = getValue("Max");
+		setResult("Mean Intensity", i, Mean); 
+		if (Max> 65534 &&  fillcheck !="red") { flag = 1;
+		run("Properties... ", "position=none group=none stroke=red width=0 fill=red");}}
+}
+
+if (flag == 1) {maxMessage();}
+
+
+
+path = getDirectory("Select a Directory");
+	
+getDateAndTime(year, month, dayOfWeek, dayOfMonth, hour, minute, second, msec);
+time = "";
+time = time +year;
+if (month<10) {time= time+"0";}
+time = time + month+1+"";
+if (dayOfMonth<10) {time= time+"0";}
+time = time +dayOfMonth+"_";
+if (hour<10) {time= time+"0";}
+time = time +hour+".";
+if (minute<10) {time= time+"0";}
+time = time +minute+"_";
+saveAs("Results", path+time+"MeanGray"+".csv");
+
+Dialog.createNonBlocking("Message");  
+Dialog.addMessage("Finished");
+	Dialog.show();
+
+function maxMessage() {
+Dialog.createNonBlocking("Congratulations");  
+			Dialog.addMessage("You maxed out the camera");
+			Dialog.show();
+}
+}

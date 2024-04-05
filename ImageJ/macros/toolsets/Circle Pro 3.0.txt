@@ -1,0 +1,386 @@
+// This macro tool creates an array of ROIs (circles, rectangles, or lines) from user input. 
+// Install permanently by saving this text file in the ImageJ\macros\toolsets folder
+// Click the >> button on the tool bar and then select Circle Pro 3.0
+// Created by Ben 3  
+// ver 3.0
+ 
+var chambrow = 20
+var chambcol = 8
+macro "Circle Pro Tool - C000D38D43D49D53D5aD6aD7aD8aD99D9aDa8Da9Db8C000C111D93Da3C111C222C333C444C555C666C777D27D37C777C888C999CaaaCbbbCcccD6bD7bD8bCcccCdddD92Da2CdddD54CdddCeeeD28D94Da4CeeeCfffD44Cfff"{ 
+getDimensions(iwidth, iheight, channels, slices, frames);
+path = File.directory;
+filename = "ROIset.zip";
+path = path+filename;
+types = newArray("Circle", "Rectangle", "Line");
+	Dialog.createNonBlocking("Circle Pro"); 
+	Dialog.setLocation(1000,100);
+	Dialog.addChoice("ROI Shape:", types);
+	Dialog.addNumber("Number of chambers in a row", chambrow); 
+	Dialog.addNumber("Number of chambers in a column", chambcol);
+	Dialog.addCheckbox("Remove current ROIs", false)
+	Dialog.show();
+	type = Dialog.getChoice();
+	chambrow= Dialog.getNumber();
+	chambcol= Dialog.getNumber();
+	wipe = Dialog.getCheckbox();
+	run("Original Scale");
+	
+if ((roiManager("count") != 0)&& wipe == 1) {
+	roiManager("deselect"); 
+	roiManager("delete"); 
+//	run("Select None");
+}
+if (type == "Line") {
+// Prompt : create first Line LINE LINE LINE LINE LINE LINE LINE LINE LINE LINE LINE LINE LINE LINE LINE 
+	Dialog.createNonBlocking("Line Pro");  
+	Dialog.addMessage("Switch to Line tool and select the top left chamber"); 
+	Dialog.addMessage("Then click OK"); 
+	Dialog.show(); 
+	setTool(4);
+ 
+// Select first Line, rename to 1, duplicate, move by right name 2  
+	
+function xmath(	
+	roiManager("add"); 
+	roiManager("select", 0); 
+	roiManager("rename", 1); 
+	getLine(ox1, oy1, ox2, oy2, lineWidth);
+	oxlen = (ox2 - ox1);
+	makeLine( (iwidth-(2*oxlen)) , oy1, iwidth-(oxlen), oy2, lineWidth);
+	roiManager("add"); 
+	roiManager("select", 1); 
+	roiManager("rename", 2 ); 
+	run("To Selection");
+	run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]");
+	roiManager("show all");
+	roiManager("Show All with labels");
+ 
+// Prompt: Center line over last chamber
+	Dialog.createNonBlocking("Line Pro") 
+	Dialog.setLocation(1000,100)
+	Dialog.addMessage("Center Line over the top right chamber"); 
+	Dialog.show();
+	
+// Center last chamber line
+	getLine(xf1, yf1, xf2, yf2, lineWidth ); 
+	xpos1 = ((xf1-ox1) /(chambrow-1));
+	xpos2 = ((xf2-ox2) /(chambrow-1));
+	ypos1 = ((yf1 - oy1)/(chambrow-1)); 
+	ypos2 = ((yf2 - oy2)/(chambrow-1));
+	roiManager("Delete");
+ 	roiManager("select", 0); 
+	getLine(j1, k1, j2, k2, lineWidth); 
+
+// Make 1-20 lines 
+	for (i = 0; i < (chambrow - 1); i++) { 
+		makeLine(ox1 + ((i+1)*xpos1), oy1 + ((i+1)*ypos1), ox2 + ((i+1)*xpos2), oy2 + ((i+1)*ypos2), lineWidth); 
+		roiManager("Add"); 
+		roiManager("select", (1+i));  
+		roiManager("rename", 2+i); 
+		getLine(j1, k1, j2, k2,lineWidth); 
+} 
+
+// Spawn 21 22 line
+for (i = 0; i < 2; i++) { 
+	if (i % 2 == 0) { 
+		makeLine(ox1, oy1+(oy1*0.20), ox2, oy2+(oy2*0.20), lineWidth); // Spawn 21
+}	else { 
+		makeLine(ox1, oy1+(oy1*0.30), ox2, oy2+(oy2*0.30)); // Spawn 22
+} 
+	roiManager("Add"); 
+	roiManager("select", (chambrow+i)); 
+	Roi.setGroup(2+i); 
+	roiManager("rename",((chambrow+1)+(i*chambrow))); 
+} 
+	roiManager("select", (chambrow))
+	run("To Selection");
+	run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]");
+
+//Prompt: Place bottom left chambers line
+	Dialog.createNonBlocking("Line Pro");  
+	Dialog.setLocation(1000,100)
+	Dialog.addMessage("Reposition ROIs "+roiManager("count")-1+" and "+roiManager("count"));  
+	Dialog.show();  
+ 
+roiManager("select", (roiManager("count")-1)); 
+getLine(xbl1, ybl1, xbl2, ybl2, lineWidth);   //22
+roiManager("delete");
+roiManager("select", (roiManager("count")-1));   //21
+getLine(xb1, yb1, xb2, yb2,lineWidth);
+yshort1 = (yb1 - oy1);
+yshort2 = (yb2 - oy2);
+xtils1 = (xb1 - ox1);
+xtils2 = (xb2 - ox2);
+xtill1 = (xbl1 - xb1);
+xtill2 = (xbl2 - xb2);
+ylong1 = (ybl1 - yb1);
+ylong2 = (ybl2 - yb2);
+roiManager("delete");
+temp1 = oy1;
+tiltemp1 = ox1;
+temp2 = oy2;
+tiltemp2 = ox2;
+
+for (j = 2; j < (chambcol-1); j++) {
+
+	if (j % 2 ==0) {
+		temp1 += yshort1;
+		tiltemp1 += xtils1;
+		temp2 += yshort2;
+		tiltemp2 += xtils2;
+		makeLine(tiltemp1 , temp1, tiltemp2 , temp2, lineWidth);}
+	else{ 
+		temp1 += ylong1; 
+		tiltemp1 += xtill1;
+		temp2 += ylong2; 
+		tiltemp2 += xtill2;
+		makeLine(tiltemp1, temp1, tiltemp2, temp2, lineWidth);}
+
+	roiManager("Add");
+	roiManager("select", (roiManager("count")-1));
+	roiManager("rename",(roiManager("count"))); 
+	run("To Selection"); run("Out [-]"); run("Out [-]");
+
+	Dialog.createNonBlocking("Line Pro");  
+	Dialog.setLocation(1000,100)
+	Dialog.addMessage("Check ROI: " +(j+2)+"/"+chambcol); 
+	Dialog.show();  
+	
+	getLine(a1, b1, a2, b2, lineWidth);
+	for (i = 0; i< chambrow-1; i++) { 
+		makeLine(a1 + ((i+1)*xpos1), b1 + ((i+1)*ypos1), a2 + ((i+1)*xpos2), b2 + ((i+1)*ypos2), lineWidth); 
+		roiManager("Add");
+		roiManager("select", (roiManager("count")-1));
+		roiManager("rename",(roiManager("count"))); }
+
+run("Original Scale");
+} 
+}
+ 
+if (type == "Circle") {
+// Prompt : create first circle  CIRCLE CIRCLE CIRCLE CIRCLE CIRCLE CIRCLE CIRCLE
+	Dialog.createNonBlocking("Circle Pro");  
+	Dialog.addMessage("Switch to oval tool and select the top left chamber"); 
+	Dialog.addMessage("Then click OK"); 
+	Dialog.show(); 
+ 
+// Select first circle, rename to 1, duplicate, move by right name 2  
+	roiManager("add"); 
+	roiManager("select", 0); 
+	roiManager("rename", 1); 
+	Roi.getBounds(ox, oy, width, height); 
+	makeOval((iwidth-(2*width)), oy, width, height);
+	roiManager("add"); 
+	roiManager("select", 1); 
+	roiManager("rename", 2 ); 
+	run("To Selection");
+	run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]");
+	roiManager("show all");
+	roiManager("Show All with labels");
+ 
+// Prompt: Center circle over last chamber
+	Dialog.createNonBlocking("Circle Pro") 
+	Dialog.setLocation(1000,100)
+	Dialog.addMessage("Center circle over the top right chamber"); 
+	Dialog.show();
+	
+// Center last chamber circle
+	Roi.getBounds(xf, yf, width, height); 
+	xpos = ((xf-ox) /(chambrow-1));
+	ypos = ((yf - oy)/(chambrow-1)); 
+	roiManager("Delete");
+ 	roiManager("select", 0); 
+	getSelectionBounds(j, k, width, height); 
+
+// Make 1-20 circle
+	for (i = 0; i < (chambrow - 1); i++) { 
+		makeOval(ox + ((i+1)*xpos), oy + ((i+1)*ypos), width, height); 
+		roiManager("Add"); 
+		roiManager("select", (1+i));  
+		roiManager("rename", 2+i); 
+		getSelectionBounds(j, k, width, height); 
+} 
+
+// Spawn 21 22 circle
+for (i = 0; i < 2; i++) { 
+	if (i % 2 == 0) { 
+		makeOval(ox, oy+(width*2.5), width, height); // Spawn 21
+}	else { 
+		makeOval(ox, oy+(width*5.5), width, height); // Spawn 22
+} 
+	roiManager("Add"); 
+	roiManager("select", (chambrow+i)); 
+	Roi.setGroup(2+i); 
+	roiManager("rename",((chambrow+1)+(i*chambrow))); 
+} 
+	roiManager("select", (chambrow))
+	run("To Selection");
+	run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]");
+
+//Prompt: Place bottom left chambers circle
+	Dialog.createNonBlocking("Circle Pro");  
+	Dialog.setLocation(1000,100)
+	Dialog.addMessage("Reposition ROIs "+roiManager("count")-1+" and "+roiManager("count"));  
+	Dialog.show();  
+ 
+roiManager("select", (roiManager("count")-1)); 
+getSelectionBounds(xbl, ybl, width, height);   //22
+roiManager("delete");
+roiManager("select", (roiManager("count")-1));   //21
+getSelectionBounds(xb, yb, width, height);
+yshort = (yb - oy);
+xtils = (xb - ox);
+xtill = (xbl - xb);
+ylong = (ybl - yb);
+roiManager("delete");
+temp = oy;
+tiltemp = ox;
+for (j = 0; j < (chambcol-1); j++) {
+
+	if (j % 2 ==0) {
+		temp = temp + yshort;
+		tiltemp = tiltemp + xtils;
+		makeOval(tiltemp , temp, width, height);}
+	else{ 
+		temp = temp + ylong; 
+		tiltemp = tiltemp +xtill;
+		makeOval(tiltemp, temp, width, height);}
+
+	roiManager("Add");
+	roiManager("select", (roiManager("count")-1));
+	roiManager("rename",(roiManager("count"))); 
+	run("To Selection"); run("Out [-]"); run("Out [-]");
+
+	Dialog.createNonBlocking("Circle Pro");  
+	Dialog.setLocation(1000,100)
+	Dialog.addMessage("Check ROI: " +(j+2)+"/"+chambcol); 
+	Dialog.show();  
+	
+	getSelectionBounds(x, y, width, height);
+	for (i = 0; i< chambrow-1; i++) { 
+		makeOval(x + ((i+1)*xpos), y + ((i+1)*ypos), width, height); 
+		roiManager("Add");
+		roiManager("select", (roiManager("count")-1));
+		roiManager("rename",(roiManager("count"))); }
+		tiltemp = x;
+		temp = y;		 
+}
+run("Original Scale");
+} 
+if (type == "Rectangle"){
+
+// Prompt : create first Rectangle RECTANGLE RECTANGLE RECTANGLE RECTANGLE RECTANGLE
+	Dialog.createNonBlocking("Rectangle Pro");  
+	Dialog.addMessage("Switch to rectangle tool and select the top left chamber"); 
+	Dialog.addMessage("Then click OK"); 
+	Dialog.show(); 
+ 
+// Select first Rectangle, rename to 1, duplicate, move by right name 2  
+	roiManager("add"); 
+	roiManager("select", 0); 
+	roiManager("rename", 1); 
+	Roi.getBounds(ox, oy, width, height); 
+	makeRectangle((iwidth-(2*width)), oy, width, height);
+	roiManager("add"); 
+	roiManager("select", 1); 
+	roiManager("rename", 2 ); 
+	run("To Selection");
+	run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]");
+	roiManager("show all");
+	roiManager("Show All with labels");
+ 
+// Prompt: Center rectangle over last chamber
+	Dialog.createNonBlocking("Rectangle Pro") 
+	Dialog.setLocation(1000,100)
+	Dialog.addMessage("Center Rectangle over the top right chamber"); 
+	Dialog.show();
+	
+// Center last chamber rectangle 
+	Roi.getBounds(xf, yf, width, height); 
+	xpos = ((xf-ox) /(chambrow-1));
+	ypos = ((yf - oy)/(chambrow-1)); 
+	roiManager("Delete");
+ 	roiManager("select", 0); 
+	getSelectionBounds(j, k, width, height); 
+
+// Make 1-20 rectangles
+	for (i = 0; i < (chambrow - 1); i++) { 
+		makeRectangle(ox + ((i+1)*xpos), oy + ((i+1)*ypos), width, height); 
+		roiManager("Add"); 
+		roiManager("select", (1+i));  
+		roiManager("rename", 2+i); 
+		getSelectionBounds(j, k, width, height); 
+} 
+
+// Spawn 21 22 rectangle
+for (i = 0; i < 2; i++) { 
+	if (i % 2 == 0) { 
+		makeRectangle(ox, oy+(width*1.5), width, height); // Spawn 21
+}	else { 
+		makeRectangle(ox, oy+(width*2.5), width, height); // Spawn 22
+} 
+	roiManager("Add"); 
+	roiManager("select", (chambrow+i)); 
+	Roi.setGroup(2+i); 
+	roiManager("rename",((chambrow+1)+(i*chambrow))); 
+} 
+	roiManager("select", (chambrow))
+	run("To Selection");
+	run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]"); run("Out [-]");
+
+//Prompt: Place bottom left chambers rectangles
+	Dialog.createNonBlocking("Rectangle Pro");  
+	Dialog.setLocation(1000,100)
+	Dialog.addMessage("Reposition ROIs "+roiManager("count")-1+" and "+roiManager("count"));  
+	Dialog.show();  
+ 
+roiManager("select", (roiManager("count")-1)); 
+getSelectionBounds(xbl, ybl, width, height);   //22
+roiManager("delete");
+roiManager("select", (roiManager("count")-1));   //21
+getSelectionBounds(xb, yb, width, height);
+yshort = (yb - oy);
+xtils = (xb - ox);
+xtill = (xbl - xb);
+ylong = (ybl - yb);
+roiManager("delete");
+temp = oy;
+tiltemp = ox;
+for (j = 0; j < (chambcol-1); j++) {
+	if (j % 2 ==0) {
+		temp = temp + yshort;
+		tiltemp = tiltemp + xtils;
+		makeRectangle(tiltemp , temp, width, height);}
+	else{ 
+		temp = temp + ylong; 
+		tiltemp = tiltemp +xtill;
+		makeRectangle(tiltemp, temp, width, height);}
+
+	roiManager("Add");
+	roiManager("select", (roiManager("count")-1));
+	roiManager("rename",(roiManager("count"))); 
+	run("To Selection"); run("Out [-]"); run("Out [-]");
+
+	Dialog.createNonBlocking("Rectangle Pro");  
+	Dialog.setLocation(1000,100)
+	Dialog.addMessage("Check ROI: " +(j+2)+"/"+chambcol); 
+	Dialog.show();  
+	
+	getSelectionBounds(x, y, width, height);
+	for (i = 0; i< chambrow-1; i++) { 
+		makeRectangle(x + ((i+1)*xpos), y + ((i+1)*ypos), width, height); 
+		roiManager("Add");
+		roiManager("select", (roiManager("count")-1));
+		roiManager("rename",(roiManager("count"))); }
+		tiltemp = x;
+		temp = y;
+}
+run("Original Scale");
+
+}
+
+roiManager("save", path);
+Dialog.createNonBlocking("Circle Pro");  
+Dialog.addMessage(path +" saved!");
+	Dialog.show();
+}

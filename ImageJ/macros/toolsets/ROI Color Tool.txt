@@ -1,0 +1,16 @@
+var color = "red"; // Default color
+
+macro "ROI Color Tool" {
+    while (true) {
+        waitForUser("Press '1' on the numpad to run ROI Color Tool.", "n1");
+        run("Properties... ", "position=none group=none stroke=" + color + " width=0 fill=none");
+    }
+}
+
+macro "ROI Color Tool Options" {
+    colors = newArray("red", "blue");
+    Dialog.create("ROI Color Tool");
+    Dialog.addChoice("Color:", colors, color);
+    Dialog.show();
+    color = Dialog.getChoice();
+}

@@ -1,0 +1,5 @@
+macro "eifel_65 Tool" { 
+for (i = 0; i<roiManager("count"); i++) {
+	roiManager("select", i);
+	run("Properties... ", "position=none group=none stroke=blue width=0 fill=none");} //patriotism
+}
