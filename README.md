@@ -1,46 +1,83 @@
-## ImageJ Macros
+# 🔬 ImageJ Macros for Microfluidics & Cell Detection
 
-### Circle Pro Tool
-_Creates an array of ROIs (Circles, rectangles, or lines) from user input_
+A suite of **ImageJ macros** developed to streamline ROI creation, fluorescence quantification, and image-based cell detection in microfluidic devices.
 
-* Automatically creates ROIs over chambers for our microfluidic devices. ROIs are renamed from the imageJ default to something more useful. 
+---
 
-* ROIs created from Circle Pro are used by other macros like IntDenCSV, Pet Detective
+## 🔵 Circle Pro Tool
 
+**Purpose**: Quickly create arrays of ROIs (circles, rectangles, or lines) based on user input.
 
-### Pet Detective Tool
-_Phycoerythrin Tag (PET) Detective_
+- Designed for use with microfluidic chamber images.
+- Automatically positions ROIs over known chamber positions.
+- Renames each ROI with meaningful labels instead of ImageJ's defaults.
+- Used as a foundation by downstream macros like **IntDenCSV** and **Pet Detective**.
 
-Automatic cell detection from micrographs:
-> Classic Mode
-> * Centers view area over an ROI and prompts if there is a cell.
-> * Answers to this prompt are recorded into a .csv file 
-> * Capable of moving back or forward through ROI set
+---
 
-> Max Mode
-> * If the highest pixel intensity within a chamber exceeds 5000 of 65536 units* the chamber is assumed to contain a cell
-> * Results are exported into a .csv file
+## 🐱 Pet Detective Tool
 
->\*optimized for 800 ms exposure on SMZ 800
+**PET** = *Phycoerythrin Tag*. This macro assists in semi-automated or fully automated cell detection within ROIs.
 
-### IntDenCSV
-_Takes integrated density measurements at every ROI on every slice and outputs to a csv file_
+### 🔍 Classic Mode
 
-* Results are exported to a .csv file
+- Cycles through ROIs, centers the view, and prompts the user:  
+  _“Is there a cell present?”_
+- User responses are recorded in a `.csv` file.
+- Supports forward and backward navigation through the ROI set.
 
-* If the 16-bit camera is maxed out a warning will appear
+### ⚡ Max Mode
 
+- Automatically checks if the maximum pixel intensity in a chamber exceeds a threshold.
+- If intensity > `5000` (of 65536), the chamber is assumed to contain a cell.
+- Optimized for: **800 ms exposure** on the **SMZ 800** microscope.
+- Results are logged to a `.csv` file.
 
-### Cyclops
-_Overlays a low opacity image over each slice of a stack_
+---
 
-### eifel_65
-_makes ROIs blue_
+## 📊 IntDenCSV
 
-### battleship
-_Renames ROIs by row,col_
+**Purpose**: Extract integrated density values across slices and ROIs.
 
-### moveit
-_Moves ROIs_
+- Measures **integrated density** (sum of pixel values) at each ROI in every slice of a stack.
+- Exports results to `.csv`.
+- Warns the user if **16-bit saturation** is detected (camera maxed out).
 
-## MATLAB
+---
+
+## 👁 Cyclops
+
+**Purpose**: Overlay a semi-transparent reference image over each slice of a stack.
+
+- Useful for visual alignment or normalization across frames.
+
+---
+
+## 🔵 eiffel_65
+
+- Makes all ROIs **blue**.
+- Good for visual contrast or figure prep.
+
+---
+
+## 🅱 Battleship
+
+- Renames ROIs based on **row and column** indexing.
+- Useful for grid-based chamber layouts.
+
+---
+
+## ➡ moveit
+
+- Moves all ROIs by a specified offset.
+
+---
+
+## 🧠 MATLAB Scripts
+
+MATLAB scripts are here too for archival purposes. I wouldn't bother trying to work with them.
+
+To the graduate student following in my footsteps: try python instead. 
+
+:)
+
